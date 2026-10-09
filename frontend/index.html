@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songseeker</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="app-container">
+        <header class="header">
+            <h1 class="logo">Songseeker<span>.</span></h1>
+            <p class="subtitle">Descubra músicas na mesma sintonia.</p>
+        </header>
+
+        <div class="search-wrapper">
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="O que você está ouvindo? Ex: Yellow Coldplay..." autocomplete="off" required>
+                <button type="submit" id="search-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+            <p>Buscando na mesma frequência...</p>
+        </div>
+
+        <div id="results" class="hidden">
+            <section class="seed-section">
+                <h2>Você buscou por</h2>
+                <div id="seed-track-container" class="iframe-container"></div>
+            </section>
+
+            <section class="recs-section">
+                <h2>Você vai gostar destas</h2>
+                <div id="recommendations-container" class="grid-container"></div>
+            </section>
+        </div>
+
+        <div id="error-message" class="hidden"></div>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

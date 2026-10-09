@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlmodel import Session, select
 from backend.spotify_client import get_spotify_token, search_track
 from backend.lastfm_client import get_similar_tracks
@@ -17,9 +19,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Songseeker MVP", lifespan=lifespan)
 
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
 @app.get("/")
 def read_root():
-    return {"message": "Bem-vindo ao Songseeker API"}
+    return FileResponse("frontend/index.html")
 
 @app.get("/api/token-status")
 async def check_token():

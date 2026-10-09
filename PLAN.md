@@ -16,7 +16,7 @@
 - [x] Etapa A: Init repo + Spotify Auth
 - [x] Etapa B: Cache SQLite
 - [x] Etapa C: Lógica de recomendação (Last.fm)
-- [ ] Etapa D: Frontend
+- [x] Etapa D: Frontend
 
 ## 4. Regras de Colaboração (Git & Agents)
 Atenção agentes: O desenvolvimento deste projeto é colaborativo entre o Yan e o seu primo. Siga estas regras estritamente:
