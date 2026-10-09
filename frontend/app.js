@@ -27,7 +27,7 @@ searchInput.addEventListener('input', (e) => {
                     div.addEventListener('click', () => {
                         searchInput.value = sug;
                         autocompleteContainer.classList.add('hidden');
-                        document.getElementById('search-form').dispatchEvent(new Event('submit'));
+                        document.getElementById('search-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
                     });
                     autocompleteContainer.appendChild(div);
                 });
