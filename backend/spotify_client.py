@@ -10,8 +10,6 @@ load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-# O token do Spotify expira em ~3600s. Renovamos um pouco antes
-# para não usar um token que vence no meio de uma requisição.
 TOKEN_REFRESH_MARGIN = 60
 
 _cached_token = None
@@ -19,7 +17,7 @@ _expires_at = 0.0
 _token_lock = None
 
 def invalidate_token():
-    # Chamar quando a API responder 401, para forçar um token novo.
+
     global _cached_token, _expires_at
     _cached_token = None
     _expires_at = 0.0
@@ -29,11 +27,9 @@ async def get_spotify_token():
     if _cached_token and time.time() < _expires_at - TOKEN_REFRESH_MARGIN:
         return _cached_token
 
-    # Criado aqui, e não no import, para ficar no event loop que está rodando.
     if _token_lock is None:
         _token_lock = asyncio.Lock()
 
-    # O lock evita que várias requisições simultâneas peçam token ao mesmo tempo.
     async with _token_lock:
         if _cached_token and time.time() < _expires_at - TOKEN_REFRESH_MARGIN:
             return _cached_token
@@ -63,20 +59,21 @@ async def get_spotify_token():
                 print(f"Error fetching token: {response.text}")
                 return None
 
-async def search_track(query: str):
+async def search_track(query: str, limit: int = 1):
     token = await get_spotify_token()
     if not token:
         return None
-        
+
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": f"Bearer {token}"}
-    params = {"q": query, "type": "track", "limit": 1}
-    
+    params = {"q": query, "type": "track", "limit": limit}
+
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers, params=params)
         if response.status_code == 200:
             data = response.json()
             tracks = data.get("tracks", {}).get("items", [])
-            if tracks:
-                return tracks[0]
+            if limit == 1:
+                return tracks[0] if tracks else None
+            return tracks
         return None
