@@ -1,17 +1,16 @@
 document.getElementById('search-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const query = document.getElementById('search-input').value.trim();
     if (!query) return;
 
     const loadingEl = document.getElementById('loading');
     const resultsEl = document.getElementById('results');
     const errorEl = document.getElementById('error-message');
-    
+
     const seedContainer = document.getElementById('seed-track-container');
     const recsContainer = document.getElementById('recommendations-container');
 
-    // Reset UI
     loadingEl.classList.remove('hidden');
     resultsEl.classList.add('hidden');
     errorEl.classList.add('hidden');
@@ -19,24 +18,20 @@ document.getElementById('search-form').addEventListener('submit', async (e) => {
     recsContainer.innerHTML = '';
 
     try {
-        // 1. Busca a música semente
         const searchRes = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
         if (!searchRes.ok) throw new Error('Música não encontrada.');
         const searchData = await searchRes.json();
         const seedTrack = searchData.track;
 
-        // Renderiza semente no iframe
         seedContainer.innerHTML = createSpotifyIframe(seedTrack.spotify_id);
 
-        // 2. Busca recomendações baseadas na semente
         const artist = seedTrack.artist_name;
         const trackName = seedTrack.name;
-        
+
         const recsRes = await fetch(`/api/recommendations?artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(trackName)}`);
         if (!recsRes.ok) throw new Error('Erro ao buscar recomendações.');
         const recsData = await recsRes.json();
 
-        // Renderiza recomendações
         if (recsData.recommendations.length === 0) {
             recsContainer.innerHTML = '<p style="color: var(--text-secondary)">Nenhuma recomendação encontrada para esta música.</p>';
         } else {
