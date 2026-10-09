@@ -1,7 +1,57 @@
+const searchInput = document.getElementById('search-input');
+const autocompleteContainer = document.getElementById('autocomplete-container');
+let debounceTimer;
+
+searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    const query = e.target.value.trim();
+    
+    if (query.length < 2) {
+        autocompleteContainer.classList.add('hidden');
+        return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+        try {
+            const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(query)}`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            
+            autocompleteContainer.innerHTML = '';
+            
+            if (data.suggestions && data.suggestions.length > 0) {
+                data.suggestions.forEach(sug => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = sug;
+                    div.addEventListener('click', () => {
+                        searchInput.value = sug;
+                        autocompleteContainer.classList.add('hidden');
+                        document.getElementById('search-form').dispatchEvent(new Event('submit'));
+                    });
+                    autocompleteContainer.appendChild(div);
+                });
+                autocompleteContainer.classList.remove('hidden');
+            } else {
+                autocompleteContainer.classList.add('hidden');
+            }
+        } catch (err) {
+            autocompleteContainer.classList.add('hidden');
+        }
+    }, 300);
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrapper')) {
+        autocompleteContainer.classList.add('hidden');
+    }
+});
+
 document.getElementById('search-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const query = document.getElementById('search-input').value.trim();
+    const query = searchInput.value.trim();
+    autocompleteContainer.classList.add('hidden');
     if (!query) return;
 
     const loadingEl = document.getElementById('loading');

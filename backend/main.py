@@ -93,3 +93,19 @@ async def get_recommendations(artist: str, track: str):
     final_recs = [r for r in results if r is not None]
 
     return {"recommendations": final_recs}
+
+@app.get("/api/autocomplete")
+async def autocomplete(q: str):
+    if not q or len(q) < 2:
+        return {"suggestions": []}
+        
+    tracks = await search_track(q, limit=5)
+    if not tracks:
+        return {"suggestions": []}
+        
+    suggestions = []
+    for t in tracks:
+        artist_name = t["artists"][0]["name"] if t.get("artists") else "Desconhecido"
+        suggestions.append(f"{t.get('name')} {artist_name}")
+        
+    return {"suggestions": suggestions}

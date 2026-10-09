@@ -59,20 +59,21 @@ async def get_spotify_token():
                 print(f"Error fetching token: {response.text}")
                 return None
 
-async def search_track(query: str):
+async def search_track(query: str, limit: int = 1):
     token = await get_spotify_token()
     if not token:
         return None
 
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": f"Bearer {token}"}
-    params = {"q": query, "type": "track", "limit": 1}
+    params = {"q": query, "type": "track", "limit": limit}
 
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers, params=params)
         if response.status_code == 200:
             data = response.json()
             tracks = data.get("tracks", {}).get("items", [])
-            if tracks:
-                return tracks[0]
+            if limit == 1:
+                return tracks[0] if tracks else None
+            return tracks
         return None
